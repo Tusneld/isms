@@ -1,0 +1,30 @@
+# ================================================================
+# iSMS - Integrated School Management System
+# Search Engine Optimization (SEO) & Web Crawler Configuration
+# ================================================================
+
+# Target Google's web crawler
+# Allows Google to index the project for search visibility
+User-agent: Googlebot
+Allow: /
+
+# Target Microsoft's Bing crawler
+# Ensures the school portal appears in Bing search results
+User-agent: Bingbot
+Allow: /
+
+# Target X link preview bot
+# Enables "Rich Cards" (titles/images) when sharing iSMS links on the X platform
+# Note: The crawler name remains 'Twitterbot' for technical compatibility
+User-agent: Twitterbot
+Allow: /
+
+# Target Facebook's crawler
+# Allows Facebook to generate previews when links are shared in posts or messages
+User-agent: facebookexternalhit
+Allow: /
+
+# Catch-all rule for all other automated crawlers
+# Grants permission for all other bots to crawl the site by default
+User-agent: *
+Allow: /
