@@ -7,7 +7,7 @@
  * - Summary statistics cards
  * - Interactive charts (daily trend, distribution, class comparison)
  * - Export functionality (PDF & Excel)
- * - Responsive student attendance table with status indicators
+ * - Responsive learner attendance table with status indicators
  * 
  * Built with React, Recharts, shadcn/ui, and date-fns.
  */
