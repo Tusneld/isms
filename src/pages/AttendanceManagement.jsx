@@ -60,7 +60,7 @@ export default function AttendanceManagement() {
 
   // Quickly mark all Learners as present
   const markAllPresent = () => {
-    setStudents(prev => prev.map(s => ({ ...s, status: "present" })));
+    setLearners(prev => prev.map(s => ({ ...s, status: "present" })));
   };
 
   // Handle saving attendance - simulates API call with delay
