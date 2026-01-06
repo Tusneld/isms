@@ -376,7 +376,7 @@ export default function SuperAdminDashboard() {
             <div className="flex-1">
               <h4 className="font-semibold text-lg">Critical Alert: Resource Shortage</h4>
               <p className="text-sm text-muted-foreground mt-1">
-                4 schools in Omusati region report severe textbook shortages ahead of Term 1.
+                4 schools in Omusati region report severe lack of Mathematics textbook shortages ahead of Term 1.
               </p>
               <Button variant="link" className="h-auto p-0 mt-3 text-destructive">
                 Take Action →
