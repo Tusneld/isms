@@ -36,12 +36,12 @@ import { toast } from "@/hooks/use-toast";
 const regions = [
   "Khomas", "Erongo", "Oshana", "Omusati", "Ohangwena",
   "Oshikoto", "Kavango East", "Kavango West", "Zambezi",
-  "Kunene", "Otjozondjupa", "Omaheke", "Hardap", "iKaras"
+  "Kunene", "Otjozondjupa", "Omaheke", "Hardap", "ǁKaras"
 ];
 
 // Available grades from Grade 1 to 12
 const grades = [
-  "Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5",
+  "Grade 0", "Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5",
   "Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10",
   "Grade 11", "Grade 12"
 ];
