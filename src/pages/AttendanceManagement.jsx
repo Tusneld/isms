@@ -54,7 +54,7 @@ export default function AttendanceManagement() {
   // Function to update a single learner's attendance status
   const updateStatus = (learnerId, status) => {
     setLearners(prev => 
-      prev.map(s => s.id === leanerId ? { ...s, status } : s)
+      prev.map(s => s.id === learnerId ? { ...s, status } : s)
     );
   };
 
@@ -212,8 +212,8 @@ export default function AttendanceManagement() {
             <CardTitle>Learner List</CardTitle>
             <CardDescription>
               {stats.unmarked > 0 
-                ? `${stats.unmarked} students remaining to mark` 
-                : "All students marked"}
+                ? `${stats.unmarked} learners remaining to mark` 
+                : "All learners marked"}
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
@@ -247,7 +247,7 @@ export default function AttendanceManagement() {
                   <Avatar className="w-10 h-10">
                     <AvatarFallback>
                       {/* Initials from name */}
-                      {leaner.name.split(" ").map(n => n[0]).join("")}
+                      {learner.name.split(" ").map(n => n[0]).join("")}
                     </AvatarFallback>
                   </Avatar>
                   <div>
@@ -277,7 +277,7 @@ export default function AttendanceManagement() {
                     onClick={() => updateStatus(learner.id, "late")}
                     className={cn(
                       "w-10 h-10 rounded-lg flex items-center justify-center transition-all",
-                      student.status === "late" 
+                      learner.status === "late" 
                         ? "bg-yellow-500 text-white shadow-md" 
                         : "bg-muted hover:bg-yellow-500/20 text-muted-foreground"
                     )}
@@ -291,7 +291,7 @@ export default function AttendanceManagement() {
                     onClick={() => updateStatus(learner.id, "absent")}
                     className={cn(
                       "w-10 h-10 rounded-lg flex items-center justify-center transition-all",
-                      student.status === "absent" 
+                      learner.status === "absent" 
                         ? "bg-destructive text-destructive-foreground shadow-md" 
                         : "bg-muted hover:bg-destructive/20 text-muted-foreground"
                     )}

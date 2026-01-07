@@ -1,3 +1,13 @@
+/**
+ * LoginPage.jsx
+ * * Handles multi-role authentication for the iSMS platform.
+ * Features:
+ * - Role-based navigation logic
+ * - Session persistence via localStorage
+ * - Dynamic UI based on login status
+ * - Protected route redirection
+ */
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,12 +22,18 @@ import {
   ArrowRight,
   LogOut,
 } from "lucide-react";
+
+// UI Components from shadcn/ui library
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge"; 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
+/** * Role Configuration
+ * Defines the available user portals and their associated metadata.
+ */
 const roles = [
   {
     id: "super_admin",
@@ -70,34 +86,52 @@ const roles = [
   },
 ];
 
+/**
+ * Route Mapping Utility
+ * Maps a user's role to their specific dashboard route.
+ * Crucial for preventing unauthorized access and redirect loops.
+ */
+const getDashboardPath = (role) => {
+  const routes = {
+    super_admin: "/admin",
+    regional_admin: "/regional", 
+    school_admin: "/school",
+    teacher: "/teacher",
+    parent: "/parent",
+    learner: "/learner",
+    sponsor: "/sponsor",
+  };
+  return routes[role] || "/login";
+};
+
 export default function LoginPage() {
   const navigate = useNavigate();
+  
+  // Component State Management
   const [selectedRole, setSelectedRole] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Check if user is already logged in
+  // Persistence: Retrieve existing user session from storage
   const currentUser = JSON.parse(localStorage.getItem("isms_user"));
 
+  /**
+   * Session Watcher
+   * Automatically redirects users to their dashboard if a valid session exists.
+   */
   useEffect(() => {
     if (currentUser) {
-      // Auto-redirect if already logged in and not on login page
-      const roleRoutes = {
-        super_admin: "/admin",
-        regional_admin: "/admin", // Share super admin dashboard for now
-        school_admin: "/school",
-        teacher: "/teacher",
-        parent: "/parent",
-        learner: "/learner",
-        sponsor: "/sponsor",
-       
-      };
-      navigate(roleRoutes[currentUser.role] || "/admin", { replace: true });
+      const targetPath = getDashboardPath(currentUser.role);
+      navigate(targetPath, { replace: true });
     }
   }, [currentUser, navigate]);
 
+  /**
+   * Authentication Handler
+   * Validates user input and creates a local session.
+   */
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!selectedRole || !email || !password) {
@@ -107,13 +141,13 @@ export default function LoginPage() {
 
     setIsLoading(true);
 
-    // Simulate login delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Simulate Network Latency for UX
+    await new Promise((resolve) => setTimeout(resolve, 800));
 
-    // Mock user data based on role
+    // Mock Backend Mapping: Associating personas with roles for demonstration
     const userMap = {
       super_admin: { name: "John Nangombe", role: "super_admin" },
-      regional_admin: { name: "Regional Director", role: "regional_admin" },
+      regional_admin: { name: "Director: Khomas Region", role: "regional_admin" },
       school_admin: { name: "Ms. Amupadhi", role: "school_admin" },
       teacher: { name: "Mr. Shilongo", role: "teacher" },
       parent: { name: "Mrs. Shikongo", role: "parent" },
@@ -127,65 +161,61 @@ export default function LoginPage() {
       role: selectedRole,
     };
 
-    // Save to localStorage
+    // Save session to LocalStorage (Production would use secure HttpOnly cookies)
     localStorage.setItem("isms_user", JSON.stringify(user));
 
     setIsLoading(false);
 
-    // Navigate to correct dashboard
-    const routes = {
-      super_admin: "/admin",
-      regional_admin: "/admin",
-      school_admin: "/school",
-      teacher: "/teacher",
-      parent: "/parent",
-      learner: "/learner",
-      sponsor: "/sponsor", 
-    };
-
-    navigate(routes[selectedRole] || "/admin");
+    // Final navigation based on role mapping
+    navigate(getDashboardPath(selectedRole));
   };
 
+  /**
+   * Session Termination
+   * Clears local storage and resets the application state.
+   */
   const handleLogout = () => {
     localStorage.removeItem("isms_user");
     setSelectedRole(null);
     setEmail("");
     setPassword("");
-    window.location.reload(); // Simple refresh
+    window.location.reload(); 
   };
 
-  // If already logged in, show simple session screen
+  /** * View: Authenticated User (Session Resume)
+   * Prevents re-login by showing a "Welcome Back" card if a session is active.
+   */
   if (currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <GraduationCap className="w-12 h-12 text-primary" />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10 p-4">
+        <Card className="w-full max-w-md border-none shadow-2xl bg-white">
+          <CardHeader className="text-center pb-2">
+            <div className="w-20 h-20 rounded-2xl bg-blue-600 flex items-center justify-center mx-auto mb-4 shadow-lg rotate-3">
+              <GraduationCap className="w-12 h-12 text-white" />
             </div>
-            <CardTitle className="text-2xl">Welcome back!</CardTitle>
-            <p className="text-muted-foreground mt-2">
-              You are logged in as <strong>{currentUser.name}</strong>
-            </p>
-            <p className="text-sm text-muted-foreground capitalize">
-              Role: {currentUser.role.replace("_", " ")}
-            </p>
+            <CardTitle className="text-2xl font-bold">Welcome back!</CardTitle>
+            <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <p className="font-semibold text-lg text-slate-900">{currentUser.name}</p>
+                <Badge variant="secondary" className="mt-1 capitalize bg-blue-100 text-blue-700 hover:bg-blue-100">
+                    {currentUser.role.replace("_", " ")}
+                </Badge>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-4">
             <Button
-              onClick={() => navigate("/")}
-              className="w-full"
-              size="lg"
+              onClick={() => navigate(getDashboardPath(currentUser.role))}
+              className="w-full h-12 text-lg shadow-md hover:shadow-lg transition-all bg-blue-600 hover:bg-blue-700"
             >
               Go to Dashboard
+              <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               onClick={handleLogout}
-              className="w-full"
+              className="w-full text-slate-500 hover:text-red-600 hover:bg-red-50"
             >
               <LogOut className="w-4 h-4 mr-2" />
-              Logout & Switch User
+              Sign out & switch account
             </Button>
           </CardContent>
         </Card>
@@ -193,118 +223,89 @@ export default function LoginPage() {
     );
   }
 
+  /**
+   * View: Unauthenticated User (Login Form)
+   * Main portal selection and credential entry.
+   */
   return (
-    <div className="min-h-screen flex">
-      {/* Left Panel - Hero (Desktop only) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary via-primary-dark to-accent relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 rounded-full bg-secondary blur-3xl" />
-          <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full bg-accent blur-3xl" />
-        </div>
-        <div className="relative z-10 flex flex-col justify-center px-12 xl:px-20">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center">
-              <GraduationCap className="w-8 h-8 text-secondary-foreground" />
+    <div className="min-h-screen flex bg-white">
+      {/* Hero Section - Desktop Only 
+          Provides branding and context for the iSMS platform.
+      */}
+      <div className="hidden lg:flex lg:w-1/2 bg-slate-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1523050335392-93851179ae22?auto=format&fit=crop&q=80')] bg-cover opacity-20" />
+        <div className="relative z-10 flex flex-col justify-center px-12 xl:px-24">
+          <div className="flex items-center gap-3 mb-12">
+            <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/50">
+              <GraduationCap className="w-7 h-7 text-white" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-primary-foreground">iSMS</h1>
-              <p className="text-primary-foreground/80 text-sm">
-                Namibia School Management
-              </p>
-            </div>
+            <h1 className="text-3xl font-bold text-white tracking-tighter">iSMS <span className="text-blue-500">Namibia</span></h1>
           </div>
 
-          <h2 className="text-4xl xl:text-5xl font-bold text-primary-foreground leading-tight">
-            Empowering
-            <span className="block text-secondary">Education</span>
-            Across Namibia
+          <h2 className="text-5xl xl:text-6xl font-extrabold text-white leading-[1.1]">
+            The heart of <br />
+            <span className="text-blue-500 italic">Namibian</span> <br />
+            Education.
           </h2>
 
-          <p className="mt-6 text-lg text-primary-foreground/80 max-w-md">
-            A unified platform connecting the Ministry of Education, schools,
-            teachers, parents, learners, and sponsors for seamless educational
-            management.
+          <p className="mt-8 text-xl text-slate-400 max-w-md leading-relaxed">
+            A unified management system for the Ministry of Education, Arts and Culture.
           </p>
-
-          <div className="mt-12 grid grid-cols-3 gap-6">
-            <div>
-              <p className="text-3xl font-bold text-secondary">248+</p>
-              <p className="text-sm text-primary-foreground/70">
-                Schools Connected
-              </p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-secondary">51K+</p>
-              <p className="text-sm text-primary-foreground/70">
-                Active Learners
-              </p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-secondary">14</p>
-              <p className="text-sm text-primary-foreground/70">
-                Regions Covered
-              </p>
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* Right Panel - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-6 bg-background">
+      {/* Authentication UI 
+          Role selector followed by credential inputs.
+      */}
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 overflow-y-auto">
         <div className="w-full max-w-md">
-          {/* Mobile Logo */}
-          <div className="flex items-center gap-3 mb-8 lg:hidden">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center">
-              <GraduationCap className="w-7 h-7 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">iSMS</h1>
-              <p className="text-muted-foreground text-sm">School Management</p>
-            </div>
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-slate-900">Sign In</h2>
+            <p className="text-slate-500 mt-2 font-medium">Select your portal to continue</p>
           </div>
 
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-foreground">Welcome Back</h2>
-            <p className="text-muted-foreground mt-2">
-              Select your role and sign in to continue
-            </p>
-          </div>
-
-          {/* Role Selection */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
+          {/* Grid Selection for Roles */}
+          <div className="grid grid-cols-2 gap-3 mb-8">
             {roles.map((role) => {
               const Icon = role.icon;
+              const isSelected = selectedRole === role.id;
               return (
                 <button
                   key={role.id}
+                  type="button"
                   onClick={() => setSelectedRole(role.id)}
                   className={cn(
-                    "p-4 rounded-xl border-2 transition-all text-left hover:shadow-md",
-                    selectedRole === role.id
-                      ? `${role.color} shadow-lg ring-2 ring-primary/50`
-                      : "border-border bg-card hover:border-primary/40"
+                    "p-4 rounded-xl border-2 transition-all text-left relative overflow-hidden group",
+                    isSelected
+                      ? "border-blue-600 bg-blue-50/50 shadow-sm"
+                      : "border-slate-100 bg-white hover:border-blue-200"
                   )}
                 >
-                  <Icon className="w-6 h-6 mb-2" />
-                  <p className="font-semibold text-sm text-foreground">
+                  <div className={cn(
+                      "w-10 h-10 rounded-lg flex items-center justify-center mb-3 transition-colors",
+                      isSelected ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500 group-hover:bg-blue-100"
+                  )}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <p className="font-bold text-sm text-slate-900 leading-tight">
                     {role.title}
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    {role.description}
+                  <p className="text-[11px] text-slate-500 mt-1 uppercase tracking-wider font-semibold">
+                    {role.description.split(" ")[0]}
                   </p>
                 </button>
               );
             })}
           </div>
 
-          {/* Login Form */}
-          <form onSubmit={handleLogin} className="space-y-5">
+          {/* Form Credentials */}
+          <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email">Email or ID Number</Label>
+              <Label htmlFor="email" className="text-slate-700 font-semibold">Username or Email</Label>
               <Input
                 id="email"
-                type="text"
-                placeholder="e.g. john@example.com or 123456"
+                className="h-12 bg-slate-50 border-slate-200 focus:bg-white transition-all"
+                placeholder="Enter your credentials"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -316,8 +317,9 @@ export default function LoginPage() {
               <div className="relative">
                 <Input
                   id="password"
+                  className="h-12 bg-slate-50 border-slate-200 focus:bg-white"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -325,46 +327,29 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="rounded border-input" />
-                <span className="text-muted-foreground">Remember me</span>
-              </label>
-              <a href="#" className="text-primary hover:underline">
-                Forgot password?
-              </a>
-            </div>
-
             <Button
               type="submit"
               size="lg"
-              className="w-full"
-              disabled={!selectedRole || isLoading || !email || !password}
+              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-200 transition-all"
+              disabled={!selectedRole || isLoading}
             >
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? "Validating..." : "Enter Portal"}
               {!isLoading && <ArrowRight className="w-4 h-4 ml-2" />}
             </Button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground mt-6">
-            New parent?{" "}
-            <a href="/register-child" className="text-primary hover:underline">
-              Register your child
-            </a>
-          </p>
-
-          <div className="mt-8 p-4 rounded-xl bg-muted/50 border border-border text-center">
-            <p className="text-xs text-muted-foreground">
-              Having trouble logging in? Contact your school administrator or call the helpdesk at{" "}
-              <strong>+264 61 270 6000</strong>
-            </p>
+          {/* Footer Assistance */}
+          <div className="mt-10 pt-6 border-t border-slate-100 text-center">
+             <p className="text-slate-500 text-sm">
+                Need help? <a href="#" className="text-blue-600 font-bold hover:underline">iSMS Support Center</a>
+             </p>
           </div>
         </div>
       </div>

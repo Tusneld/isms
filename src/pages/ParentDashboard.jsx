@@ -13,8 +13,10 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
+  LogOut  
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -25,7 +27,6 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 
 const children = [
@@ -84,6 +85,12 @@ const notifications = [
 export default function ParentDashboard() {
   const [selectedChild, setSelectedChild] = useState(children[0]);
 
+  // Logout function — clears saved user and returns to login/home
+  const handleLogout = () => {
+    localStorage.removeItem("isms_user");
+    window.location.href = "/"; 
+  };
+
   return (
     <div className="p-4 md:p-6 lg:p-8 space-y-6">
       {/* Header */}
@@ -109,6 +116,11 @@ export default function ParentDashboard() {
               Register New Child
             </Button>
           </Link>
+          {/* Logout Button */}
+          <Button variant="outline" onClick={handleLogout}>
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
         </div>
       </div>
 

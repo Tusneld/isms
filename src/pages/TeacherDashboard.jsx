@@ -10,6 +10,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -20,7 +21,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+
 
 // Mock data - Updated for December 30, 2025 (Tuesday)
 const todaySchedule = [

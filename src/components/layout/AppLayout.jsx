@@ -1,5 +1,5 @@
 import { AppSidebar } from "./AppSidebar";
-import { IZitoChatbot } from "@/components/chatbot/IZitoChatbot";
+import { ZitoChatbot } from "@/components/chatbot/ZitoChatbot";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 /**
@@ -26,7 +26,7 @@ export function AppLayout({ children, userRole, userName }) {
         </main>
 
         {/* Floating Chatbot Assistant */}
-        <IZitoChatbot />
+        <ZitoChatbot />
       </div>
     </TooltipProvider>
   );

@@ -26,6 +26,7 @@ import {
   X,
   Clock,
   School,
+  UserPlus
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -730,7 +731,7 @@ export default function AttendanceReports() {
         </CardHeader>
         <CardContent>
           <DataTable
-            data={learnertAttendanceRecords}
+            data={learnerAttendanceRecords}
             columns={tableColumns}
             searchPlaceholder="Search learners..."
             pageSize={10}

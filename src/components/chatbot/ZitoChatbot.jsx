@@ -1,10 +1,10 @@
 /**
- * IZitoChatbot.jsx
+ * ZitoChatbot.jsx
  * 
  * Multilingual school assistant chatbot for iSMS (Namibia School Management System)
  * 
  * Features:
- * - Floating chat bubble to open/close the chatbot
+ * - Floating chat bubble with ROBOT icon (easily recognizable as AI)
  * - Supports English, Oshiwambo, and Afrikaans
  * - Greeting message in selected language
  * - Quick reply buttons for common queries
@@ -16,7 +16,7 @@
  */
 
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, X, Send, Globe, Loader2 } from "lucide-react";
+import { Bot, X, Send, Globe, Loader2 } from "lucide-react"; 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -34,17 +34,17 @@ const languages = [
   {
     code: "en",
     label: "English",
-    greeting: "Hello! I'm iZITO, your school assistant. How can I help you today?",
+    greeting: "Hello! I'm Zito, your school assistant. How can I help you today?",
   },
   {
     code: "os",
     label: "Oshiwambo",
-    greeting: "Wa lalapo! Ame oiZITO, omukwateli gwoye gwoskola. Onda hala okukwafela ngahelipi nena?",
+    greeting: "Wa lalapo! Ame Zito, omukwateli gwoye gwoskola. Onda hala okukwafela ngahelipi nena?",
   },
   {
     code: "af",
     label: "Afrikaans",
-    greeting: "Hallo! Ek is iZITO, jou skoolassistent. Hoe kan ek jou vandag help?",
+    greeting: "Hallo! Ek is Z, jou skoolassistent. Hoe kan ek jou vandag help?",
   },
 ];
 
@@ -57,7 +57,7 @@ const quickReplies = [
   "Fee balance",
 ];
 
-export function IZitoChatbot() {
+export function ZitoChatbot() {
   // State management
   const [isOpen, setIsOpen] = useState(false); // Controls chat window visibility
   const [language, setLanguage] = useState("en"); // Selected language
@@ -121,8 +121,7 @@ export function IZitoChatbot() {
 
       setMessages((prev) => [...prev, botMessage]);
       setIsTyping(false);
-    // eslint-disable-next-line react-hooks/purity
-    }, 1000 + Math.random() * 1000);
+    }, 1000 + Math.random() * 1000); 
   };
 
   // Generate appropriate bot response based on query and language
@@ -165,16 +164,16 @@ export function IZitoChatbot() {
 
   return (
     <>
-      {/* Floating Chat Bubble */}
+      {/* Floating Chat Bubble —  with ROBOT icon for clear AI recognition */}
       <button
         onClick={() => setIsOpen(true)}
         className={cn(
-          "chatbot-bubble fixed bottom-6 right-6 z-50 transition-all duration-300 hover:scale-110",
+          "chatbot-bubble fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-2xl hover:scale-110 transition-all duration-300",
           isOpen && "scale-0 opacity-0 pointer-events-none"
         )}
-        aria-label="Open iZITO chat assistant"
+        aria-label="Open Zito AI Assistant"
       >
-        <MessageSquare className="w-6 h-6 text-secondary-foreground" />
+        <Bot className="w-8 h-8" /> {/* ← ROBOT ICON */}
       </button>
 
       {/* Chat Window */}
@@ -184,15 +183,15 @@ export function IZitoChatbot() {
           isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0 pointer-events-none"
         )}
       >
-        {/* Header */}
+        {/* Header — Also uses robot icon */}
         <div className="flex items-center justify-between p-4 border-b border-border bg-gradient-to-r from-primary to-primary-dark text-primary-foreground">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
-              <MessageSquare className="w-5 h-5 text-secondary-foreground" />
+              <Bot className="w-6 h-6 text-secondary-foreground" /> {/* ← ROBOT ICON */}
             </div>
             <div>
-              <h3 className="font-semibold">iZITO Assistant</h3>
-              <p className="text-xs opacity-80">Always here to help</p>
+              <h3 className="font-semibold">Zito Assistant</h3>
+              <p className="text-xs opacity-80">Your AI School Helper</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
