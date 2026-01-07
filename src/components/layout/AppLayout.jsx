@@ -12,7 +12,6 @@ export function AppLayout({ children, userRole, userName }) {
   return (
     <TooltipProvider>
       <div className="min-h-screen flex w-full bg-background">
-        {/* Sidebar remains fixed on the left */}
         <AppSidebar 
           userRole={userRole} 
           user={{ role: userRole, name: userName }} 

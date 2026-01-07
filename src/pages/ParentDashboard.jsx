@@ -85,7 +85,6 @@ const notifications = [
 export default function ParentDashboard() {
   const [selectedChild, setSelectedChild] = useState(children[0]);
 
-  // Logout function — clears saved user and returns to login/home
   const handleLogout = () => {
     localStorage.removeItem("isms_user");
     window.location.href = "/"; 
@@ -106,25 +105,29 @@ export default function ParentDashboard() {
         <div className="flex items-center gap-3">
           <Button variant="outline" className="relative">
             <Bell className="w-4 h-4" />
-            <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-xs flex items-center justify-center font-medium">
+            {/* Bell Notification Badge - Yellow */}
+            <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-yellow-400 text-black text-[10px] flex items-center justify-center font-bold border border-background">
               2
             </span>
           </Button>
+          
           <Link to="/register-child">
-            <Button variant="gradient">
+            {/* Register New Child - Green */}
+            <Button className="bg-green-600 hover:bg-green-700 text-white border-none">
               <UserPlus className="w-4 h-4 mr-2" />
               Register New Child
             </Button>
           </Link>
-          {/* Logout Button */}
-          <Button variant="outline" onClick={handleLogout}>
+
+          {/* Logout Button - Red */}
+          <Button variant="destructive" onClick={handleLogout}>
             <LogOut className="w-4 h-4 mr-2" />
             Logout
           </Button>
         </div>
       </div>
 
-      {/* Child Selector (Mobile-friendly) */}
+      {/* Child Selector */}
       <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
         {children.map((child) => (
           <button
@@ -159,9 +162,7 @@ export default function ParentDashboard() {
                 <ClipboardCheck className="w-5 h-5 text-accent" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-foreground">
-                  {selectedChild.attendance}%
-                </p>
+                <p className="text-2xl font-bold text-foreground">{selectedChild.attendance}%</p>
                 <p className="text-xs text-muted-foreground">Attendance</p>
               </div>
             </div>
@@ -175,9 +176,7 @@ export default function ParentDashboard() {
                 <TrendingUp className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-foreground">
-                  {selectedChild.performance}%
-                </p>
+                <p className="text-2xl font-bold text-foreground">{selectedChild.performance}%</p>
                 <p className="text-xs text-muted-foreground">Performance</p>
               </div>
             </div>
@@ -215,56 +214,40 @@ export default function ParentDashboard() {
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Attendance */}
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ClipboardCheck className="w-5 h-5 text-accent" />
               Recent Attendance
             </CardTitle>
-            <CardDescription>
-              Last 5 days for {selectedChild.name}
-            </CardDescription>
+            <CardDescription>Last 5 days for {selectedChild.name}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex justify-between gap-2">
               {recentAttendance.map((record, index) => (
                 <div key={index} className="flex-1 text-center">
-                  <div
-                    className={cn(
+                  <div className={cn(
                       "w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2",
                       record.status === "present" && "bg-accent/10",
                       record.status === "absent" && "bg-destructive/10",
                       record.status === "late" && "bg-secondary/10"
-                    )}
-                  >
-                    {record.status === "present" && (
-                      <CheckCircle2 className="w-6 h-6 text-accent" />
-                    )}
-                    {record.status === "absent" && (
-                      <XCircle className="w-6 h-6 text-destructive" />
-                    )}
-                    {record.status === "late" && (
-                      <Clock className="w-6 h-6 text-secondary-foreground" />
-                    )}
+                    )}>
+                    {record.status === "present" && <CheckCircle2 className="w-6 h-6 text-accent" />}
+                    {record.status === "absent" && <XCircle className="w-6 h-6 text-destructive" />}
+                    {record.status === "late" && <Clock className="w-6 h-6 text-secondary-foreground" />}
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {record.date.split(", ")[1]}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {record.date.split(", ")[0]}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{record.date.split(", ")[1]}</p>
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="w-full mt-6">
+            {/* View Full Attendance - Green */}
+            <Button variant="outline" className="w-full mt-6 border-green-600 text-green-600 hover:bg-green-50">
               View Full Attendance Record
               <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
           </CardContent>
         </Card>
 
-        {/* Academic Performance */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -282,17 +265,14 @@ export default function ParentDashboard() {
             ].map((subject) => (
               <div key={subject.subject}>
                 <div className="flex justify-between text-sm mb-1">
-                  <span className="text-muted-foreground">
-                    {subject.subject}
-                  </span>
-                  <span className="font-medium text-foreground">
-                    {subject.score}%
-                  </span>
+                  <span className="text-muted-foreground">{subject.subject}</span>
+                  <span className="font-medium text-foreground">{subject.score}%</span>
                 </div>
                 <Progress value={subject.score} className="h-2" />
               </div>
             ))}
-            <Button variant="outline" className="w-full mt-4">
+            {/* View Full Report - Green */}
+            <Button variant="outline" className="w-full mt-4 border-green-600 text-green-600 hover:bg-green-50">
               View Full Report
               <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
@@ -300,7 +280,7 @@ export default function ParentDashboard() {
         </Card>
       </div>
 
-      {/* Notifications */}
+      {/* Notifications Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -311,38 +291,21 @@ export default function ParentDashboard() {
         <CardContent>
           <div className="space-y-3">
             {notifications.map((notification) => (
-              <div
-                key={notification.id}
-                className={cn(
+              <div key={notification.id} className={cn(
                   "flex items-start gap-4 p-4 rounded-lg transition-all",
-                  notification.read
-                    ? "bg-muted/30"
-                    : "bg-primary/5 border border-primary/20"
-                )}
-              >
-                <div
-                  className={cn(
+                  notification.read ? "bg-muted/30" : "bg-primary/5 border border-primary/20"
+                )}>
+                <div className={cn(
                     "w-2 h-2 rounded-full mt-2 shrink-0",
                     notification.read ? "bg-muted-foreground/50" : "bg-primary"
-                  )}
-                />
+                  )} />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-foreground">
-                      {notification.title}
-                    </h4>
-                    {!notification.read && (
-                      <Badge variant="secondary" className="text-xs">
-                        New
-                      </Badge>
-                    )}
+                    <h4 className="font-medium text-foreground">{notification.title}</h4>
+                    {!notification.read && <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-800">New</Badge>}
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {notification.message}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {notification.time}
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
+                  <p className="text-xs text-muted-foreground mt-2">{notification.time}</p>
                 </div>
               </div>
             ))}
@@ -350,24 +313,20 @@ export default function ParentDashboard() {
         </CardContent>
       </Card>
 
-      {/* Quick Actions (Mobile-friendly grid) */}
+      {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <button className="flex flex-col items-center gap-3 p-5 rounded-xl bg-card border border-border hover:border-primary/50 hover:shadow-sm transition-all">
           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
             <MessageSquare className="w-6 h-6 text-primary" />
           </div>
-          <span className="text-sm font-medium text-foreground">
-            Message Teacher
-          </span>
+          <span className="text-sm font-medium text-foreground">Message Teacher</span>
         </button>
 
         <button className="flex flex-col items-center gap-3 p-5 rounded-xl bg-card border border-border hover:border-primary/50 hover:shadow-sm transition-all">
           <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center">
             <Calendar className="w-6 h-6 text-accent" />
           </div>
-          <span className="text-sm font-medium text-foreground">
-            School Calendar
-          </span>
+          <span className="text-sm font-medium text-foreground">School Calendar</span>
         </button>
 
         <button className="flex flex-col items-center gap-3 p-5 rounded-xl bg-card border border-border hover:border-primary/50 hover:shadow-sm transition-all">
@@ -381,9 +340,7 @@ export default function ParentDashboard() {
           <div className="w-12 h-12 rounded-xl bg-destructive/10 flex items-center justify-center">
             <BookOpen className="w-6 h-6 text-destructive" />
           </div>
-          <span className="text-sm font-medium text-foreground">
-            View Reports
-          </span>
+          <span className="text-sm font-medium text-foreground">View Reports</span>
         </button>
       </div>
     </div>

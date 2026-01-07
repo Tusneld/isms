@@ -126,7 +126,7 @@ export function MultiStepForm({
           </Button>
           {isLastStep ? (
             <Button
-              variant="default" // Changed from 'gradient' to 'default' unless you have a custom gradient variant
+              variant="default" 
               onClick={onComplete}
               disabled={isSubmitting}
               type="button"

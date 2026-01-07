@@ -10,7 +10,7 @@ import {
   Search
 } from "lucide-react";
 
-// shadcn/ui components (Installed via npx shadcn@latest add ...)
+// shadcn/ui components 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {

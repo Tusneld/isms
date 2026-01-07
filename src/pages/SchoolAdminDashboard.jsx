@@ -29,7 +29,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
-// Mock data - updated for December 30, 2025
+// Mock data 
 const schoolStats = {
   totalLearners: 1240,
   totalTeachers: 68,
@@ -90,7 +90,7 @@ export default function SchoolAdminDashboard() {
             <Calendar className="w-5 h-5 mr-2" />
             Academic Calendar
           </Button>
-          {/* ← ADDED: Logout Button */}
+          {/* Logout Button */}
           <Button variant="outline" onClick={handleLogout}>
             <LogOut className="w-5 h-5 mr-2" />
             Logout

@@ -1,7 +1,7 @@
 /**
  * SponsorDashboard.jsx
  * 
- * Fully polished sponsor dashboard with modern hover effects:
+ * Sponsor dashboard with modern hover effects:
  * - Shadow lift on cards and items
  * - Smooth scale on buttons
  * - Green for all positive/financial actions

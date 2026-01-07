@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 
-// Mock data updated to current date context (December 2025)
+// Mock data updated to current date context 
 const mockRegistrations = [
   {
     id: "1",

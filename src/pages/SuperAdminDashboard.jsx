@@ -408,7 +408,7 @@ export default function SuperAdminDashboard() {
         </Card>
       </div>
 
-      {/* PERFECTLY READABLE DRAGGABLE FAB */}
+      {/* READABLE DRAGGABLE FAB */}
       <DraggableFAB />
     </div>
   );

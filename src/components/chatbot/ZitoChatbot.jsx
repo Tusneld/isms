@@ -93,7 +93,7 @@ export function ZitoChatbot() {
   const handleSend = () => {
     if (!input.trim()) return;
 
-    // Generate timestamp and ID safely inside handler (not during render)
+    // Generate timestamp and ID safely inside handler 
     const timestamp = new Date();
     const id = timestamp.getTime().toString();
 

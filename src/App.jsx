@@ -14,8 +14,12 @@ import SMSRegistrations from "./pages/SMSRegistrations";
 import AttendanceManagement from "./pages/AttendanceManagement";
 import NotFound from "./pages/NotFound";
 import { AppLayout } from "./components/layout/AppLayout";
+import TeacherGrading from "./pages/TeacherGrading";
 
-// 1. Debugger to see where the loop breaks
+/**
+ * NotFoundLogger
+ * Logs 404 attempts for debugging during development.
+ */
 const NotFoundLogger = () => {
   const location = useLocation();
   useEffect(() => {
@@ -24,17 +28,18 @@ const NotFoundLogger = () => {
   return <NotFound />;
 };
 
-// 2. STABLE ProtectedRoute (No useState to avoid loops)
+/**
+ * ProtectedRoute
+ * Logic to gate access based on authentication and user roles.
+ */
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const saved = localStorage.getItem("isms_user");
   const user = saved ? JSON.parse(saved) : null;
 
-  // If no user, go to login
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // If role is wrong, go to login (avoids redirecting to a page that redirects back)
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     console.warn(`User role ${user.role} not authorized for this route.`);
     return <Navigate to="/login" replace />;
@@ -43,7 +48,9 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   return children;
 };
 
-// --- LAYOUTS ---
+/**
+ * --- ROLE-BASED LAYOUT WRAPPERS ---
+ */
 const SuperAdminLayout = ({ children }) => (
   <AppLayout userRole="super_admin" userName="John Nangombe">{children}</AppLayout>
 );
@@ -66,13 +73,17 @@ const SponsorLayout = ({ children }) => (
   <AppLayout userRole="sponsor" userName="NamPower Foundation">{children}</AppLayout>
 );
 
+/**
+ * Main App Component
+ */
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public Route */}
         <Route path="/login" element={<LoginPage />} />
 
-        {/* Super Admin */}
+        {/* Super Admin Section */}
         <Route path="/admin" element={
           <ProtectedRoute allowedRoles={["super_admin"]}>
             <SuperAdminLayout><SuperAdminDashboard /></SuperAdminLayout>
@@ -84,21 +95,21 @@ function App() {
           </ProtectedRoute>
         } />
 
-        {/* Regional */}
+        {/* Regional Section */}
         <Route path="/regional" element={
           <ProtectedRoute allowedRoles={["regional_admin"]}>
             <RegionalLayout><RegionalDashboard /></RegionalLayout>
           </ProtectedRoute>
         } />
 
-        {/* School */}
+        {/* School Section */}
         <Route path="/school" element={
           <ProtectedRoute allowedRoles={["school_admin"]}>
             <SchoolAdminLayout><SchoolAdminDashboard /></SchoolAdminLayout>
           </ProtectedRoute>
         } />
 
-        {/* Teacher */}
+        {/* Teacher Section */}
         <Route path="/teacher" element={
           <ProtectedRoute allowedRoles={["teacher"]}>
             <TeacherLayout><TeacherDashboard /></TeacherLayout>
@@ -109,12 +120,30 @@ function App() {
             <TeacherLayout><AttendanceManagement /></TeacherLayout>
           </ProtectedRoute>
         } />
+        <Route path="/teacher/grading" element={
+          <ProtectedRoute allowedRoles={["teacher"]}>
+            <TeacherLayout><TeacherGrading /></TeacherLayout>
+          </ProtectedRoute>
+        } />
 
-        {/* Parent, Learner, Sponsor */}
-        <Route path="/parent" element={<ProtectedRoute allowedRoles={["parent"]}><ParentLayout><ParentDashboard /></ParentLayout></ProtectedRoute>} />
-        <Route path="/learner" element={<ProtectedRoute allowedRoles={["learner"]}><LearnerLayout><LearnerDashboard /></LearnerLayout></ProtectedRoute>} />
-        <Route path="/sponsor" element={<ProtectedRoute allowedRoles={["sponsor"]}><SponsorLayout><SponsorDashboard /></SponsorLayout></ProtectedRoute>} />
+        {/* Parent, Learner, Sponsor Sections */}
+        <Route path="/parent" element={
+          <ProtectedRoute allowedRoles={["parent"]}>
+            <ParentLayout><ParentDashboard /></ParentLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/learner" element={
+          <ProtectedRoute allowedRoles={["learner"]}>
+            <LearnerLayout><LearnerDashboard /></LearnerLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/sponsor" element={
+          <ProtectedRoute allowedRoles={["sponsor"]}>
+            <SponsorLayout><SponsorDashboard /></SponsorLayout>
+          </ProtectedRoute>
+        } />
 
+        {/* System Redirects */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="*" element={<NotFoundLogger />} />
       </Routes>

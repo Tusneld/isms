@@ -24,7 +24,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils"; // Utility for conditional class names
 import { toast } from "@/hooks/use-toast"; // Toast notification hook
 
-// Mock learner data - in real app, this would come from an API
+// Mock learner data 
 const mockLearners = [
   { id: "1", name: "Anna Nghipondoka", rollNo: "001", status: null },
   { id: "2", name: "Johannes Amupanda", rollNo: "002", status: null },

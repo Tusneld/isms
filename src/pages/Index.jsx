@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, School, BarChart3, MessageSquare } from "lucide-react";
-import { IZitoChatbot } from "@/components/IZitoChatbot"; // If you have the chatbot ready
+import { ZitoChatbot } from "@/components/ZitoChatbot"; 
 
 export default function Home() {
   return (
@@ -58,7 +58,7 @@ export default function Home() {
             <Card>
               <CardHeader>
                 <MessageSquare className="w-10 h-10 mb-2 text-primary" />
-                <CardTitle>iZITO Assistant</CardTitle>
+                <CardTitle>Zito Assistant</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription>Multilingual AI chatbot in English, Oshiwambo, and Afrikaans.</CardDescription>
@@ -74,7 +74,7 @@ export default function Home() {
       </div>
 
       {/* Floating Chatbot */}
-      <IZitoChatbot />
+      <ZitoChatbot />
     </>
   );
 }

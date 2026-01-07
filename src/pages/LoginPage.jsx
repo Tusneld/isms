@@ -1,15 +1,5 @@
-/**
- * LoginPage.jsx
- * * Handles multi-role authentication for the iSMS platform.
- * Features:
- * - Role-based navigation logic
- * - Session persistence via localStorage
- * - Dynamic UI based on login status
- * - Protected route redirection
- */
-
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   GraduationCap,
   Shield,
@@ -21,76 +11,32 @@ import {
   EyeOff,
   ArrowRight,
   LogOut,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Globe,
+  Mail,
+  Phone
 } from "lucide-react";
 
-// UI Components from shadcn/ui library
+// UI Components
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge"; 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-/** * Role Configuration
- * Defines the available user portals and their associated metadata.
- */
 const roles = [
-  {
-    id: "super_admin",
-    title: "Super Admin",
-    description: "National oversight",
-    icon: Shield,
-    color: "bg-destructive/10 text-destructive border-destructive/30",
-  },
-  {
-    id: "regional_admin",
-    title: "Regional Admin",
-    description: "Regional management",
-    icon: MapPin,
-    color: "bg-primary/10 text-primary border-primary/30",
-  },
-  {
-    id: "school_admin",
-    title: "School Admin",
-    description: "School management",
-    icon: School,
-    color: "bg-accent/10 text-accent border-accent/30",
-  },
-  {
-    id: "teacher",
-    title: "Teacher",
-    description: "Classroom access",
-    icon: GraduationCap,
-    color: "bg-secondary/10 text-secondary-foreground border-secondary/30",
-  },
-  {
-    id: "parent",
-    title: "Parent",
-    description: "Learner tracking",
-    icon: Users,
-    color: "bg-blue-500/10 text-blue-600 border-blue-500/30",
-  },
-  {
-    id: "learner",
-    title: "Learner",
-    description: "Learner portal",
-    icon: User,
-    color: "bg-green-500/10 text-green-600 border-green-500/30",
-  },
-  {
-    id: "sponsor",
-    title: "Sponsor",
-    description: "Support education",
-    icon: GraduationCap,
-    color: "bg-yellow-500/10 text-yellow-700 border-yellow-500/30",
-  },
+  { id: "super_admin", title: "Super Admin", description: "National oversight", icon: Shield },
+  { id: "regional_admin", title: "Regional Admin", description: "Regional management", icon: MapPin },
+  { id: "school_admin", title: "School Admin", description: "School management", icon: School },
+  { id: "teacher", title: "Teacher", description: "Classroom access", icon: GraduationCap },
+  { id: "parent", title: "Parent", description: "Learner tracking", icon: Users },
+  { id: "learner", title: "Learner", description: "Learner portal", icon: User },
+  { id: "sponsor", title: "Sponsor", description: "Support education", icon: GraduationCap },
 ];
 
-/**
- * Route Mapping Utility
- * Maps a user's role to their specific dashboard route.
- * Crucial for preventing unauthorized access and redirect loops.
- */
 const getDashboardPath = (role) => {
   const routes = {
     super_admin: "/admin",
@@ -106,116 +52,52 @@ const getDashboardPath = (role) => {
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  
-  // Component State Management
   const [selectedRole, setSelectedRole] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Persistence: Retrieve existing user session from storage
   const currentUser = JSON.parse(localStorage.getItem("isms_user"));
 
-  /**
-   * Session Watcher
-   * Automatically redirects users to their dashboard if a valid session exists.
-   */
   useEffect(() => {
     if (currentUser) {
-      const targetPath = getDashboardPath(currentUser.role);
-      navigate(targetPath, { replace: true });
+      navigate(getDashboardPath(currentUser.role), { replace: true });
     }
   }, [currentUser, navigate]);
 
-  /**
-   * Authentication Handler
-   * Validates user input and creates a local session.
-   */
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!selectedRole || !email || !password) {
-      alert("Please select a role and fill in all fields");
-      return;
-    }
-
+    if (!selectedRole || !email || !password) return;
     setIsLoading(true);
-
-    // Simulate Network Latency for UX
     await new Promise((resolve) => setTimeout(resolve, 800));
-
-    // Mock Backend Mapping: Associating personas with roles for demonstration
-    const userMap = {
-      super_admin: { name: "John Nangombe", role: "super_admin" },
-      regional_admin: { name: "Director: Khomas Region", role: "regional_admin" },
-      school_admin: { name: "Ms. Amupadhi", role: "school_admin" },
-      teacher: { name: "Mr. Shilongo", role: "teacher" },
-      parent: { name: "Mrs. Shikongo", role: "parent" },
-      learner: { name: "Maria Shikongo", role: "learner" },
-      sponsor: { name: "NamPower Foundation", role: "sponsor" },
-    };
-
-    const user = {
-      email,
-      name: userMap[selectedRole]?.name || "User",
-      role: selectedRole,
-    };
-
-    // Save session to LocalStorage (Production would use secure HttpOnly cookies)
+    const user = { email, name: "Authorized User", role: selectedRole };
     localStorage.setItem("isms_user", JSON.stringify(user));
-
     setIsLoading(false);
-
-    // Final navigation based on role mapping
     navigate(getDashboardPath(selectedRole));
   };
 
-  /**
-   * Session Termination
-   * Clears local storage and resets the application state.
-   */
   const handleLogout = () => {
     localStorage.removeItem("isms_user");
-    setSelectedRole(null);
-    setEmail("");
-    setPassword("");
     window.location.reload(); 
   };
 
-  /** * View: Authenticated User (Session Resume)
-   * Prevents re-login by showing a "Welcome Back" card if a session is active.
-   */
   if (currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10 p-4">
-        <Card className="w-full max-w-md border-none shadow-2xl bg-white">
-          <CardHeader className="text-center pb-2">
-            <div className="w-20 h-20 rounded-2xl bg-blue-600 flex items-center justify-center mx-auto mb-4 shadow-lg rotate-3">
-              <GraduationCap className="w-12 h-12 text-white" />
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4 font-sans">
+        <Card className="w-full max-w-md shadow-xl border-slate-200">
+          <CardHeader className="text-center">
+            <div className="w-16 h-16 rounded-xl bg-blue-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-200">
+              <GraduationCap className="w-10 h-10 text-white" />
             </div>
             <CardTitle className="text-2xl font-bold">Welcome back!</CardTitle>
-            <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                <p className="font-semibold text-lg text-slate-900">{currentUser.name}</p>
-                <Badge variant="secondary" className="mt-1 capitalize bg-blue-100 text-blue-700 hover:bg-blue-100">
-                    {currentUser.role.replace("_", " ")}
-                </Badge>
-            </div>
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
-            <Button
-              onClick={() => navigate(getDashboardPath(currentUser.role))}
-              className="w-full h-12 text-lg shadow-md hover:shadow-lg transition-all bg-blue-600 hover:bg-blue-700"
-            >
-              Go to Dashboard
-              <ArrowRight className="w-5 h-5 ml-2" />
+            <Button onClick={() => navigate(getDashboardPath(currentUser.role))} className="w-full h-12 bg-blue-600 hover:bg-blue-700">
+              Go to Dashboard <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
-            <Button
-              variant="ghost"
-              onClick={handleLogout}
-              className="w-full text-slate-500 hover:text-red-600 hover:bg-red-50"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign out & switch account
+            <Button variant="ghost" onClick={handleLogout} className="w-full text-slate-500 hover:text-red-600">
+              <LogOut className="w-4 h-4 mr-2" /> Sign Out & Switch Account
             </Button>
           </CardContent>
         </Card>
@@ -223,136 +105,184 @@ export default function LoginPage() {
     );
   }
 
-  /**
-   * View: Unauthenticated User (Login Form)
-   * Main portal selection and credential entry.
-   */
   return (
-    <div className="min-h-screen flex bg-white">
-      {/* Hero Section - Desktop Only 
-          Provides branding and context for the iSMS platform.
-      */}
-      <div className="hidden lg:flex lg:w-1/2 bg-slate-900 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1523050335392-93851179ae22?auto=format&fit=crop&q=80')] bg-cover opacity-20" />
-        <div className="relative z-10 flex flex-col justify-center px-12 xl:px-24">
-          <div className="flex items-center gap-3 mb-12">
-            <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/50">
-              <GraduationCap className="w-7 h-7 text-white" />
+    <div className="min-h-screen flex flex-col bg-white selection:bg-blue-100 font-sans">
+      <div className="flex flex-1">
+        {/* LEFT PANEL: HERO SECTION */}
+        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary via-blue-900 to-accent relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-20 left-20 w-72 h-72 rounded-full bg-secondary blur-3xl" />
+            <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full bg-accent blur-3xl" />
+          </div>
+          <div className="relative z-10 flex flex-col justify-center px-12 xl:px-20">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center shadow-lg shadow-blue-900/40">
+                <GraduationCap className="w-8 h-8 text-secondary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-primary-foreground tracking-tight">iSMS</h1>
+                <p className="text-primary-foreground/80 text-sm">Namibia School Management</p>
+              </div>
             </div>
-            <h1 className="text-3xl font-bold text-white tracking-tighter">iSMS <span className="text-blue-500">Namibia</span></h1>
+            
+            <h2 className="text-4xl xl:text-5xl font-bold text-primary-foreground leading-tight">
+              Empowering
+              <span className="block text-secondary">Education</span>
+              Across Namibia
+            </h2>
+            
+            <p className="mt-6 text-lg text-primary-foreground/80 max-w-md leading-relaxed">
+              A unified platform connecting the Ministry of Education, schools, teachers, parents, and learners for seamless educational management.
+            </p>
+            
+            <div className="mt-12 grid grid-cols-3 gap-6">
+              <div>
+                <p className="text-3xl font-bold text-secondary">245+</p>
+                <p className="text-sm text-primary-foreground/70">Schools Connected</p>
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-secondary">50K+</p>
+                <p className="text-sm text-primary-foreground/70">Active Learners</p>
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-secondary">14</p>
+                <p className="text-sm text-primary-foreground/70">Regions Covered</p>
+              </div>
+            </div>
           </div>
-
-          <h2 className="text-5xl xl:text-6xl font-extrabold text-white leading-[1.1]">
-            The heart of <br />
-            <span className="text-blue-500 italic">Namibian</span> <br />
-            Education.
-          </h2>
-
-          <p className="mt-8 text-xl text-slate-400 max-w-md leading-relaxed">
-            A unified management system for the Ministry of Education, Arts and Culture.
-          </p>
         </div>
-      </div>
 
-      {/* Authentication UI 
-          Role selector followed by credential inputs.
-      */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 overflow-y-auto">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-slate-900">Sign In</h2>
-            <p className="text-slate-500 mt-2 font-medium">Select your portal to continue</p>
+        {/* RIGHT PANEL: AUTH UI */}
+        <div className="flex-1 flex items-center justify-center p-6 lg:p-12 overflow-y-auto bg-white">
+          <div className="w-full max-w-md">
+            <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-foreground">Welcome Back</h2>
+            <p className="text-muted-foreground mt-2">Select your role and sign in to continue</p>
           </div>
 
-          {/* Grid Selection for Roles */}
-          <div className="grid grid-cols-2 gap-3 mb-8">
-            {roles.map((role) => {
-              const Icon = role.icon;
-              const isSelected = selectedRole === role.id;
-              return (
+            <div className="grid grid-cols-2 gap-3 mb-8">
+              {roles.map((role) => (
                 <button
                   key={role.id}
                   type="button"
                   onClick={() => setSelectedRole(role.id)}
                   className={cn(
-                    "p-4 rounded-xl border-2 transition-all text-left relative overflow-hidden group",
-                    isSelected
-                      ? "border-blue-600 bg-blue-50/50 shadow-sm"
-                      : "border-slate-100 bg-white hover:border-blue-200"
+                    "p-4 rounded-xl border-2 transition-all text-left group",
+                    selectedRole === role.id ? "border-blue-600 bg-blue-50/50" : "border-slate-100 bg-white hover:border-blue-200"
                   )}
                 >
-                  <div className={cn(
-                      "w-10 h-10 rounded-lg flex items-center justify-center mb-3 transition-colors",
-                      isSelected ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500 group-hover:bg-blue-100"
-                  )}>
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  <p className="font-bold text-sm text-slate-900 leading-tight">
-                    {role.title}
-                  </p>
-                  <p className="text-[11px] text-slate-500 mt-1 uppercase tracking-wider font-semibold">
-                    {role.description.split(" ")[0]}
-                  </p>
+                  <role.icon className={cn("w-5 h-5 mb-3", selectedRole === role.id ? "text-blue-600" : "text-slate-400")} />
+                  <p className="font-bold text-sm text-slate-900 leading-tight">{role.title}</p>
                 </button>
-              );
-            })}
-          </div>
-
-          {/* Form Credentials */}
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-700 font-semibold">Username or Email</Label>
-              <Input
-                id="email"
-                className="h-12 bg-slate-50 border-slate-200 focus:bg-white transition-all"
-                placeholder="Enter your credentials"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+              ))}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  className="h-12 bg-slate-50 border-slate-200 focus:bg-white"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div className="space-y-2">
+                <Label className="text-slate-700 font-semibold">Username or Email</Label>
+                <Input 
+                  className="h-12 bg-slate-50 border-slate-200 focus:bg-white transition-colors" 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  placeholder="e.g. tusnelde@isms.com.na"
+                  required 
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
               </div>
+              <div className="space-y-2">
+                <Label className="text-slate-700 font-semibold">Password</Label>
+                <div className="relative">
+                  <Input 
+                    type={showPassword ? "text" : "password"} 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    className="h-12 bg-slate-50 border-slate-200 focus:bg-white transition-colors" 
+                    placeholder="Enter your secure password"
+                    required 
+                  />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600">
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" className="rounded border-input" />
+                <span className="text-muted-foreground">Remember me</span>
+              </label>
+              <a href="#" className="text-primary hover:underline">Forgot password?</a>
             </div>
 
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-200 transition-all"
-              disabled={!selectedRole || isLoading}
-            >
-              {isLoading ? "Validating..." : "Enter Portal"}
-              {!isLoading && <ArrowRight className="w-4 h-4 ml-2" />}
-            </Button>
-          </form>
+              <Button type="submit" disabled={!selectedRole || isLoading} className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-transform active:scale-[0.98]">
+               {isLoading ? "Signing in..." : "Sign In"}
+              </Button>
+            </form>
 
-          {/* Footer Assistance */}
-          <div className="mt-10 pt-6 border-t border-slate-100 text-center">
-             <p className="text-slate-500 text-sm">
-                Need help? <a href="#" className="text-blue-600 font-bold hover:underline">iSMS Support Center</a>
-             </p>
+            <p className="text-center text-sm text-slate-500 mt-6">
+              New parent? <Link to="/register-child" className="text-blue-600 hover:underline font-bold">Register your child</Link>
+            </p>
+            
+            <div className="mt-8 p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <p className="text-[11px] text-center text-slate-500">
+                Having trouble? Contact your admin or helpdesk at <strong>+264 61 270 6000</strong>
+              </p>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* ULTRA-COMPACT FOOTER */}
+      <footer className="bg-slate-950 text-slate-400 border-t border-slate-900">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            
+            {/* Left: Branding & Tagline */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 pr-4 border-r border-slate-800">
+                <div className="w-7 h-7 rounded bg-blue-600 flex items-center justify-center">
+                  <GraduationCap className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-lg font-bold text-white tracking-tight">iSMS</span>
+              </div>
+              <p className="text-[11px] max-w-[200px] leading-tight opacity-70">
+                Ministry of Education, Arts & Culture. Unified National Management.
+              </p>
+            </div>
+
+            {/* Middle: Fast Links */}
+            <div className="flex gap-8 text-[11px] font-medium uppercase tracking-wider">
+              <a href="#" className="hover:text-blue-400 transition-colors">Privacy</a>
+              <a href="#" className="hover:text-blue-400 transition-colors">Support</a>
+              <a href="#" className="hover:text-blue-400 transition-colors">Guides</a>
+              <div className="flex items-center gap-2 text-slate-500">
+                <Mail size={12} className="text-blue-500" />
+                <span className="lowercase">support@isms.moe.gov.na</span>
+              </div>
+            </div>
+
+            {/* Right: Social & System Status */}
+            <div className="flex items-center gap-5">
+              <div className="flex gap-3 pr-5 border-r border-slate-800">
+                {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
+                  <a key={i} href="#" className="hover:text-white transition-colors">
+                    <Icon size={14} />
+                  </a>
+                ))}
+              </div>
+              <div className="flex items-center gap-2 text-[10px] font-bold">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                <span className="text-emerald-500 uppercase">System Online</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-slate-900/50 flex justify-between items-center text-[10px] opacity-50">
+            <p>© 2026 iSMS Namibia. All rights reserved.</p>
+            <span className="flex items-center gap-1"><Globe size={10}/> Windhoek, Namibia</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
